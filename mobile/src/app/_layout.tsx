@@ -8,6 +8,7 @@ export default function RootLayout() {
   const [currentTime, setCurrentTime] = useState('00h:00m:00s');
   const router = useRouter();
   const pathname = usePathname();
+  const isLoginScreen = pathname === '/login';
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
@@ -39,30 +40,31 @@ export default function RootLayout() {
     <View style={styles.appContainer}>
       <StatusBar hidden={true} />
 
-      {/* CUSTOM TOP APPBAR WITH HORIZONTAL DIVIDER */}
-      <View style={styles.customAppBar}>
-        {/* Left Side: Stacking Title and Icon */}
-        <TouchableOpacity onPress={toggleSidebar} activeOpacity={0.7} style={styles.headerLeftStack}>
-          <Text style={styles.brandTitleText}>FarmSim</Text>
-          <MaterialCommunityIcons
-            name="sprout"
-            size={35} 
-            color="#00E639"
-            style={styles.brandIcon}
-          />
-        </TouchableOpacity>
+      {!isLoginScreen && (
+        <View style={styles.customAppBar}>
+          <TouchableOpacity onPress={toggleSidebar} activeOpacity={0.7} style={styles.headerLeftStack}>
+            <Text style={styles.brandTitleText}>FarmSim</Text>
+            <MaterialCommunityIcons
+              name="sprout"
+              size={35}
+              color="#00E639"
+              style={styles.brandIcon}
+            />
+          </TouchableOpacity>
 
-        {/* Right Side: Clean vertical text strings */}
-        <View style={styles.headerRightColumn}>
-          <Text style={styles.timeHighlight}>{currentTime}</Text>
-          <Text style={styles.metaDataText}>date 28/09/26</Text>
-          <Text style={styles.metaDataText}>system online 00d:00h:00m</Text>
+          <View style={styles.headerRightColumn}>
+            <Text style={styles.timeHighlight}>{currentTime}</Text>
+            <Text style={styles.metaDataText}>date 28/09/26</Text>
+            <Text style={styles.metaDataText}>system online 00d:00h:00m</Text>
+          </View>
         </View>
-      </View>
+      )}
 
       {/* Main Screen Navigation Stack */}
-<Stack screenOptions={{ headerShown: false, animation: 'none' }}>        <Stack.Screen name="index" />
-        <Stack.Screen name="plots" /> 
+      <Stack screenOptions={{ headerShown: false, animation: 'none' }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="login" />
+        <Stack.Screen name="plots" />
         <Stack.Screen name="targets" />
         <Stack.Screen name="nutrients" />
         <Stack.Screen name="analytics" />
@@ -71,50 +73,52 @@ export default function RootLayout() {
         <Stack.Screen name="settings" />
       </Stack>
 
-      {/* Persistent Pull Handle Tab on the Left Edge */}
-      <TouchableOpacity 
-        activeOpacity={0.8} 
-        onPress={toggleSidebar} 
-        style={[styles.pullTab, isSidebarOpen && styles.pullTabOpen]}
-      >
-        <MaterialCommunityIcons 
-          name={isSidebarOpen ? "chevron-left" : "chevron-right"} 
-          size={18} 
-          color="#00E639" 
-        />
-      </TouchableOpacity>
+      {!isLoginScreen && (
+        <>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={toggleSidebar}
+            style={[styles.pullTab, isSidebarOpen && styles.pullTabOpen]}
+          >
+            <MaterialCommunityIcons
+              name={isSidebarOpen ? 'chevron-left' : 'chevron-right'}
+              size={18}
+              color="#00E639"
+            />
+          </TouchableOpacity>
 
-      {/* Slide-out Sidebar Drawer Overlay */}
-      {isSidebarOpen && (
-        <View style={styles.sidebarOverlay}>
-          <TouchableOpacity style={styles.closeArea} onPress={toggleSidebar} />
-          
-          <View style={styles.drawerColumn}>
-            {sidebarIcons.map((icon, index) => {
-              const isActive = pathname === icon.route;
+          {isSidebarOpen && (
+            <View style={styles.sidebarOverlay}>
+              <TouchableOpacity style={styles.closeArea} onPress={toggleSidebar} />
 
-              return (
-                <TouchableOpacity 
-                  key={index} 
-                  style={styles.iconWrapper} 
-                  onPress={() => {
-                    toggleSidebar();
-                    router.push(icon.route as any);
-                  }}
-                >
-                  <MaterialCommunityIcons
-                    name={icon.name as any}
-                    size={26}
-                    color={isActive ? '#00E639' : '#455545'} 
-                  />
-                  <Text style={[styles.iconLabel, isActive && styles.activeText]}>
-                    {icon.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </View>
+              <View style={styles.drawerColumn}>
+                {sidebarIcons.map((icon, index) => {
+                  const isActive = pathname === icon.route;
+
+                  return (
+                    <TouchableOpacity
+                      key={index}
+                      style={styles.iconWrapper}
+                      onPress={() => {
+                        toggleSidebar();
+                        router.push(icon.route as any);
+                      }}
+                    >
+                      <MaterialCommunityIcons
+                        name={icon.name as any}
+                        size={26}
+                        color={isActive ? '#00E639' : '#455545'}
+                      />
+                      <Text style={[styles.iconLabel, isActive && styles.activeText]}>
+                        {icon.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+          )}
+        </>
       )}
     </View>
   );
